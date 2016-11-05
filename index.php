@@ -23,3 +23,6 @@ $age = "5";
 $result = is_int($age);
 var_dump ($result);
 
+
+  
+?>
