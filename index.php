@@ -24,5 +24,4 @@ $result = is_int($age);
 var_dump ($result);
 
 
-  
 ?>
