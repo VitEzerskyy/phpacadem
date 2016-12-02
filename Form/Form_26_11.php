@@ -11,7 +11,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $today = date("F j, Y, g:i a");
 
     if ( $userdata['age'] == false) {
-        header("Location: http://mysite.local/Form/Form_26_11.php/?errors=1");
+        header("Location: /Form/Form_26_11.php/?errors=1");
         } else {
             $tofile = implode('|', $userdata);
             file_put_contents("db.txt", $tofile, FILE_APPEND);
@@ -104,7 +104,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <?php endif; ?>
 
-    <form method="POST" action="http://mysite.local/Form/Form_26_11.php" enctype="multipart/form-data">
+    <form method="POST" action="/Form/Form_26_11.php" enctype="multipart/form-data">
         <label for="name">Name<span class="required">*</span></label>
         <input type="text" name="name" id="name">
         <label for="age">Age<span class="required">*</span></label>
