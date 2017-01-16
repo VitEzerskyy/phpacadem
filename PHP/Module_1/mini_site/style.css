@@ -1,0 +1,28 @@
+header, footer {
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+main {
+    width: 80%;
+    margin: 0 auto;
+    font-family: "Comic Sans MS", sans-serif;
+}
+
+header nav a, footer nav a {
+    font-size: 16px;
+    text-transform: uppercase;
+    font-style: italic;
+    text-decoration: none;
+    border-bottom: 1px dashed;
+    margin-right: 20px;
+}
+
+footer nav a {
+    color: green;
+}
+
+form {
+    width: 50%; margin: 20px auto
+}
