@@ -10,7 +10,7 @@
     Please login
 </h1>
 
-<form action="authorize_php_auth_user.php" method="post">
+<form action="admin.php" method="post">
     <input type="text" name="username"/> <br/> <br/>
     <input type="password" name="password"/> <br/> <br/>
     <input type="checkbox" name="remember"/> Remember me <br/> <br/>
