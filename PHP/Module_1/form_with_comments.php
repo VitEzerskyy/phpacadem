@@ -1,6 +1,10 @@
 <?php
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $userdata = array_map('htmlentities', $_POST);
+    function func($str) {
+        return strip_tags($str, '<b>');
+    }
+
+    $userdata = array_map("func", $_POST);
 
     $userdata['age'] = filter_var($userdata['age'], FILTER_VALIDATE_INT) ? : false;
 
