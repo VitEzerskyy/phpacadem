@@ -1,4 +1,7 @@
 <?php
+
+/*Написать рекурсивную функцию аналог print_r*/
+
 $shop_categories = array(
     array(
         'title' => 'computers',
