@@ -1,0 +1,152 @@
+1. получить ТОП 3 платежа относительно суммы оплаты
+
+select * from payments
+order by amount desc
+limit 3;
+
+2. Напишем запрос по подсчету суммы платежей по каждому году.
+
+select YEAR(paymentDate) as yeear, sum(amount) from payments
+group by yeear;
+
+3. Платежи по месяцам и годам. Включить в запрос сумму по группам в поле платежей, соединить выбранные поля с полями имя, фамилия таблицы заказчика и указать, какой именно заказчик нас интересует.
+
+select c.contactLastName, c.contactFirstName, SUM(p.amount), YEAR(p.paymentDate), MONTH(p.paymentDate) from payments p
+join customers c ON p.customerNumber=c.customerNumber
+where c.customerNumber=114
+GROUP BY YEAR(p.paymentDate), MONTH(p.paymentDate);
+
+4. Количество сотрудников и количество заказчиков для каждого офиса.
+
+select e.officeCode, count(DISTINCT e.employeeNumber), count(c.customerNumber) from employees e
+left join customers c ON e.employeeNumber=c.salesRepEmployeeNumber
+group by officeCode;
+
+5.Средний доход на клиента/сотрудника.
+
+select c.customerNumber as customer_id, ifnull( avg( p.amount ) , 0 ) as avg_amount , e.employeeNumber as employee_id
+from customers c
+join payments p ON p.customerNumber = c.customerNumber
+right join employees e ON e.employeeNumber = c.salesRepEmployeeNumber
+group by e.employeeNumber;
+
+6. Сотрудники без клиентов
+
+select e.lastName, e.firstName, c.contactLastName, c.contactFirstName from employees e
+left join customers c ON e.employeeNumber=c.salesRepEmployeeNumber
+where c.customerNumber IS NULL;
+
+7. ТОП 10 продаваемых товаров.
+
+select pr.productCode as product, count( pr.productCode ) as count from products pr
+join orderdetails ord ON pr.productCode=ord.productCode
+join orders o ON ord.orderNumber=o.orderNumber
+join customers c ON o.customerNumber=c.customerNumber
+join payments p ON c.customerNumber=p.customerNumber
+GROUP BY product
+ORDER BY count DESC
+LIMIT 0 , 10;
+
+8. Сотрудники, привязанные более чем к 5 клиентам.
+
+select e.employeeNumber, e.lastName, e.firstName, count(c.customerNumber) as cnt from employees e
+join customers c ON e.employeeNumber=c.salesRepEmployeeNumber
+group by e.employeeNumber
+having cnt > 5;
+
+9.  Заказы с наибольшим количеством товаров.
+
+select orderNumber, count(productCode) as cnt from orderdetails
+group by orderNumber
+order by cnt desc
+limit 5;
+
+10.  Офисы с менее чем 15 заказов за год.
+
+select of.officeCode, count(o.orderNumber) as cnt, YEAR (o.orderDate) from offices of
+join employees e ON of.officeCode=e.officeCode
+join customers c ON e.employeeNumber=c.salesRepEmployeeNumber
+join orders o ON c.customerNumber=o.customerNumber
+where YEAR(o.orderDate) = '2003'
+group by of.officeCode
+having cnt < 15;
+
+11. Выбор офисов, кроме конкретных.
+
+select * from offices
+where officeCode NOT IN (4,7,3);
+
+12. День месяца, месяц, год, сумма платежей.
+
+select DAY(paymentDate) as day, MONTH(paymentDate) as month, YEAR(paymentDate) as year, sum(amount) from payments
+group by year, month, day
+order by year, month, day;
+
+13. Месяц, год, максимальная сумма платежей.
+
+select MONTH(paymentDate) as month, YEAR(paymentDate) as year, max(amount) from payments
+group by year, month
+order by year, month;
+
+14.Клиенты, которые не сделали заказ.
+
+select c.customerName, c.contactLastName, c.contactFirstName, o.orderDate from customers c
+left join orders o ON c.customerNumber=o.customerNumber and MONTH(o.orderDate)=2 and YEAR(o.orderDate)=2004
+where o.customerNumber IS NULL;
+
+15. Период заказов клиентов. Выберем клиентов, у которых период между двумя заказами более трех месяцев.
+
+select o1.orderNumber, o1.orderDate, o1.customerNumber, o2.orderNumber, o2.orderDate, o2.customerNumber 
+from orders o1, orders o2 
+where o1.customerNumber = o2.customerNumber and o1.orderDate > o2.orderDate 
+and (select count(*) from orders o3 where o3.orderDate < o1.orderDate and o3.orderDate > o2.orderDate and o1.customerNumber = o3.customerNumber) = 0 
+and period_diff(date_format(o1.orderDate, '%y%m'), date_format(o2.orderDate,'%y%m' )) > 3 
+group by o1.customerNumber
+order by o1.customerNumber asc;
+
+16.Получение клиентов, которые сделали заказ, но не оплатили его.
+
+select c.customerNumber, c.customerName, o.orderNumber
+from customers c
+join orders o ON c.customerNumber=o.customerNumber
+left join payments p ON c.customerNumber=p.customerNumber
+where p.customerNumber IS NULL
+group by c.customerNumber;
+
+17. Получить линейки товаров для каждого клиента.
+
+select c.customerNumber as customer_id, c.customerName as customer_name, GROUP_CONCAT(distinct pl.productLine)
+from customers c
+join orders o ON c.customerNumber = o.customerNumber
+join orderdetails od ON od.orderNumber = o.orderNumber
+join products p ON p.productCode = od.productCode
+join productlines pl ON pl.productLine = p.productLine
+group by customer_id;
+
+18. Таблица по выборке.
+
+CREATE TABLE test_table AS (
+select c.customerNumber as customer_id, c.customerName as customer_name, GROUP_CONCAT(distinct pl.productLine)
+from customers c
+join orders o ON c.customerNumber = o.customerNumber
+join orderdetails od ON od.orderNumber = o.orderNumber
+join products p ON p.productCode = od.productCode
+join productlines pl ON pl.productLine = p.productLine
+group by customer_id
+);
+
+19.Добавляем запись по выборке.
+
+INSERT INTO test_table (customer_id, customer_name) SELECT 666, 'Some guy!';
+
+
+20. Работа с представлениями.
+
+CREATE VIEW customer_product_lines AS 
+select c.customerNumber as customer_id, c.customerName as customer_name, GROUP_CONCAT(distinct pl.productLine)
+from customers c
+join orders o ON c.customerNumber = o.customerNumber
+join orderdetails od ON od.orderNumber = o.orderNumber
+join products p ON p.productCode = od.productCode
+join productlines pl ON pl.productLine = p.productLine
+group by customer_id;
