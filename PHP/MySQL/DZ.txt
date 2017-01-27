@@ -1,28 +1,28 @@
-1. получить ТОП 3 платежа относительно суммы оплаты
+п»ї1. РїРѕР»СѓС‡РёС‚СЊ РўРћРџ 3 РїР»Р°С‚РµР¶Р° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЃСѓРјРјС‹ РѕРїР»Р°С‚С‹
 
 select * from payments
 order by amount desc
 limit 3;
 
-2. Напишем запрос по подсчету суммы платежей по каждому году.
+2. РќР°РїРёС€РµРј Р·Р°РїСЂРѕСЃ РїРѕ РїРѕРґСЃС‡РµС‚Сѓ СЃСѓРјРјС‹ РїР»Р°С‚РµР¶РµР№ РїРѕ РєР°Р¶РґРѕРјСѓ РіРѕРґСѓ.
 
 select YEAR(paymentDate) as yeear, sum(amount) from payments
 group by yeear;
 
-3. Платежи по месяцам и годам. Включить в запрос сумму по группам в поле платежей, соединить выбранные поля с полями имя, фамилия таблицы заказчика и указать, какой именно заказчик нас интересует.
+3. РџР»Р°С‚РµР¶Рё РїРѕ РјРµСЃСЏС†Р°Рј Рё РіРѕРґР°Рј. Р’РєР»СЋС‡РёС‚СЊ РІ Р·Р°РїСЂРѕСЃ СЃСѓРјРјСѓ РїРѕ РіСЂСѓРїРїР°Рј РІ РїРѕР»Рµ РїР»Р°С‚РµР¶РµР№, СЃРѕРµРґРёРЅРёС‚СЊ РІС‹Р±СЂР°РЅРЅС‹Рµ РїРѕР»СЏ СЃ РїРѕР»СЏРјРё РёРјСЏ, С„Р°РјРёР»РёСЏ С‚Р°Р±Р»РёС†С‹ Р·Р°РєР°Р·С‡РёРєР° Рё СѓРєР°Р·Р°С‚СЊ, РєР°РєРѕР№ РёРјРµРЅРЅРѕ Р·Р°РєР°Р·С‡РёРє РЅР°СЃ РёРЅС‚РµСЂРµСЃСѓРµС‚.
 
 select c.contactLastName, c.contactFirstName, SUM(p.amount), YEAR(p.paymentDate), MONTH(p.paymentDate) from payments p
 join customers c ON p.customerNumber=c.customerNumber
 where c.customerNumber=114
 GROUP BY YEAR(p.paymentDate), MONTH(p.paymentDate);
 
-4. Количество сотрудников и количество заказчиков для каждого офиса.
+4. РљРѕР»РёС‡РµСЃС‚РІРѕ СЃРѕС‚СЂСѓРґРЅРёРєРѕРІ Рё РєРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РєР°Р·С‡РёРєРѕРІ РґР»СЏ РєР°Р¶РґРѕРіРѕ РѕС„РёСЃР°.
 
 select e.officeCode, count(DISTINCT e.employeeNumber), count(c.customerNumber) from employees e
 left join customers c ON e.employeeNumber=c.salesRepEmployeeNumber
 group by officeCode;
 
-5.Средний доход на клиента/сотрудника.
+5.РЎСЂРµРґРЅРёР№ РґРѕС…РѕРґ РЅР° РєР»РёРµРЅС‚Р°/СЃРѕС‚СЂСѓРґРЅРёРєР°.
 
 select c.customerNumber as customer_id, ifnull( avg( p.amount ) , 0 ) as avg_amount , e.employeeNumber as employee_id
 from customers c
@@ -30,13 +30,13 @@ join payments p ON p.customerNumber = c.customerNumber
 right join employees e ON e.employeeNumber = c.salesRepEmployeeNumber
 group by e.employeeNumber;
 
-6. Сотрудники без клиентов
+6. РЎРѕС‚СЂСѓРґРЅРёРєРё Р±РµР· РєР»РёРµРЅС‚РѕРІ
 
 select e.lastName, e.firstName, c.contactLastName, c.contactFirstName from employees e
 left join customers c ON e.employeeNumber=c.salesRepEmployeeNumber
 where c.customerNumber IS NULL;
 
-7. ТОП 10 продаваемых товаров.
+7. РўРћРџ 10 РїСЂРѕРґР°РІР°РµРјС‹С… С‚РѕРІР°СЂРѕРІ.
 
 select pr.productCode as product, count( pr.productCode ) as count from products pr
 join orderdetails ord ON pr.productCode=ord.productCode
@@ -47,21 +47,21 @@ GROUP BY product
 ORDER BY count DESC
 LIMIT 0 , 10;
 
-8. Сотрудники, привязанные более чем к 5 клиентам.
+8. РЎРѕС‚СЂСѓРґРЅРёРєРё, РїСЂРёРІСЏР·Р°РЅРЅС‹Рµ Р±РѕР»РµРµ С‡РµРј Рє 5 РєР»РёРµРЅС‚Р°Рј.
 
 select e.employeeNumber, e.lastName, e.firstName, count(c.customerNumber) as cnt from employees e
 join customers c ON e.employeeNumber=c.salesRepEmployeeNumber
 group by e.employeeNumber
 having cnt > 5;
 
-9.  Заказы с наибольшим количеством товаров.
+9.  Р—Р°РєР°Р·С‹ СЃ РЅР°РёР±РѕР»СЊС€РёРј РєРѕР»РёС‡РµСЃС‚РІРѕРј С‚РѕРІР°СЂРѕРІ.
 
 select orderNumber, count(productCode) as cnt from orderdetails
 group by orderNumber
 order by cnt desc
 limit 5;
 
-10.  Офисы с менее чем 15 заказов за год.
+10.  РћС„РёСЃС‹ СЃ РјРµРЅРµРµ С‡РµРј 15 Р·Р°РєР°Р·РѕРІ Р·Р° РіРѕРґ.
 
 select of.officeCode, count(o.orderNumber) as cnt, YEAR (o.orderDate) from offices of
 join employees e ON of.officeCode=e.officeCode
@@ -71,30 +71,30 @@ where YEAR(o.orderDate) = '2003'
 group by of.officeCode
 having cnt < 15;
 
-11. Выбор офисов, кроме конкретных.
+11. Р’С‹Р±РѕСЂ РѕС„РёСЃРѕРІ, РєСЂРѕРјРµ РєРѕРЅРєСЂРµС‚РЅС‹С….
 
 select * from offices
 where officeCode NOT IN (4,7,3);
 
-12. День месяца, месяц, год, сумма платежей.
+12. Р”РµРЅСЊ РјРµСЃСЏС†Р°, РјРµСЃСЏС†, РіРѕРґ, СЃСѓРјРјР° РїР»Р°С‚РµР¶РµР№.
 
 select DAY(paymentDate) as day, MONTH(paymentDate) as month, YEAR(paymentDate) as year, sum(amount) from payments
 group by year, month, day
 order by year, month, day;
 
-13. Месяц, год, максимальная сумма платежей.
+13. РњРµСЃСЏС†, РіРѕРґ, РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ СЃСѓРјРјР° РїР»Р°С‚РµР¶РµР№.
 
 select MONTH(paymentDate) as month, YEAR(paymentDate) as year, max(amount) from payments
 group by year, month
 order by year, month;
 
-14.Клиенты, которые не сделали заказ.
+14.РљР»РёРµРЅС‚С‹, РєРѕС‚РѕСЂС‹Рµ РЅРµ СЃРґРµР»Р°Р»Рё Р·Р°РєР°Р·.
 
 select c.customerName, c.contactLastName, c.contactFirstName, o.orderDate from customers c
 left join orders o ON c.customerNumber=o.customerNumber and MONTH(o.orderDate)=2 and YEAR(o.orderDate)=2004
 where o.customerNumber IS NULL;
 
-15. Период заказов клиентов. Выберем клиентов, у которых период между двумя заказами более трех месяцев.
+15. РџРµСЂРёРѕРґ Р·Р°РєР°Р·РѕРІ РєР»РёРµРЅС‚РѕРІ. Р’С‹Р±РµСЂРµРј РєР»РёРµРЅС‚РѕРІ, Сѓ РєРѕС‚РѕСЂС‹С… РїРµСЂРёРѕРґ РјРµР¶РґСѓ РґРІСѓРјСЏ Р·Р°РєР°Р·Р°РјРё Р±РѕР»РµРµ С‚СЂРµС… РјРµСЃСЏС†РµРІ.
 
 select o1.orderNumber, o1.orderDate, o1.customerNumber, o2.orderNumber, o2.orderDate, o2.customerNumber 
 from orders o1, orders o2 
@@ -104,7 +104,7 @@ and period_diff(date_format(o1.orderDate, '%y%m'), date_format(o2.orderDate,'%y%
 group by o1.customerNumber
 order by o1.customerNumber asc;
 
-16.Получение клиентов, которые сделали заказ, но не оплатили его.
+16.РџРѕР»СѓС‡РµРЅРёРµ РєР»РёРµРЅС‚РѕРІ, РєРѕС‚РѕСЂС‹Рµ СЃРґРµР»Р°Р»Рё Р·Р°РєР°Р·, РЅРѕ РЅРµ РѕРїР»Р°С‚РёР»Рё РµРіРѕ.
 
 select c.customerNumber, c.customerName, o.orderNumber
 from customers c
@@ -113,7 +113,7 @@ left join payments p ON c.customerNumber=p.customerNumber
 where p.customerNumber IS NULL
 group by c.customerNumber;
 
-17. Получить линейки товаров для каждого клиента.
+17. РџРѕР»СѓС‡РёС‚СЊ Р»РёРЅРµР№РєРё С‚РѕРІР°СЂРѕРІ РґР»СЏ РєР°Р¶РґРѕРіРѕ РєР»РёРµРЅС‚Р°.
 
 select c.customerNumber as customer_id, c.customerName as customer_name, GROUP_CONCAT(distinct pl.productLine)
 from customers c
@@ -123,7 +123,7 @@ join products p ON p.productCode = od.productCode
 join productlines pl ON pl.productLine = p.productLine
 group by customer_id;
 
-18. Таблица по выборке.
+18. РўР°Р±Р»РёС†Р° РїРѕ РІС‹Р±РѕСЂРєРµ.
 
 CREATE TABLE test_table AS (
 select c.customerNumber as customer_id, c.customerName as customer_name, GROUP_CONCAT(distinct pl.productLine)
@@ -135,12 +135,12 @@ join productlines pl ON pl.productLine = p.productLine
 group by customer_id
 );
 
-19.Добавляем запись по выборке.
+19.Р”РѕР±Р°РІР»СЏРµРј Р·Р°РїРёСЃСЊ РїРѕ РІС‹Р±РѕСЂРєРµ.
 
 INSERT INTO test_table (customer_id, customer_name) SELECT 666, 'Some guy!';
 
 
-20. Работа с представлениями.
+20. Р Р°Р±РѕС‚Р° СЃ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏРјРё.
 
 CREATE VIEW customer_product_lines AS 
 select c.customerNumber as customer_id, c.customerName as customer_name, GROUP_CONCAT(distinct pl.productLine)
