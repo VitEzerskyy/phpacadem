@@ -8,7 +8,6 @@ class Hatchback extends Car implements iCar {
         $this->brand = $brand;
         $this->model = $model;
         $this->price = $price;
-        $this->addToShowroom($this);
     }
 
     public function getPrice()
@@ -31,8 +30,4 @@ class Hatchback extends Car implements iCar {
         echo $this->model.PHP_EOL;
     }
 
-    private function addToShowroom($obj)
-    {
-        CarShowroom::$data[] = $obj;
-    }
 }
