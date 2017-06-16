@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Git search</title>
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+
+    <div id="block">
+        <form class="form-inline">
+    <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="field">
+        <option>Field</option>
+        <option value="size">size</option>
+        <option value="forks">forks</option>
+        <option value="stars">stars</option>
+        <option value="followers">followers</option>
+    </select>
+    <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id="operator">
+          <option selected>Operator</option>
+          <option value=">">></option>
+          <option value="<"><</option>
+          <option value="=">=</option>
+    </select>
+    <input type="text" placeholder="Value" id="value">
+      <button class="btn btn-danger">Delete</button>
+            </form>
+        </div>
+    <div class="form-inline">
+        <button type="submit" id="apply" class="btn btn-info">Apply</button>
+        <button id ="clear"  class="btn btn-warning">Clear</button>
+        <button type="submit" id="add_rule" class="btn btn-success">Add Rule</button>
+    </div>
+
+<script type="text/javascript" src="public/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="public/js/jquery-3.2.1.min.js"></script>
+</body>
+</html>
